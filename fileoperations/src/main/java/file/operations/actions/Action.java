@@ -4,6 +4,7 @@ import java.util.List;
 import java.util.Set;
 
 import file.operations.Checksum;
+import file.operations.FileUtil;
 import file.operations.actions.ActionItem.Items;
 import lombok.Builder;
 import lombok.Data;
@@ -18,5 +19,9 @@ public class Action {
 
 	public void execute() {
 		actionItems.forEach(c -> c.execute());
+	}
+	
+	public String toString() {
+		return FileUtil.convertToJSONString(this);
 	}
 }

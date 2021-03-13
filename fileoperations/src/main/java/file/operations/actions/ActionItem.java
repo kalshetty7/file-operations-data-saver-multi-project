@@ -97,4 +97,9 @@ public class ActionItem {
 			break;
 		}
 	}
+	
+	public String toString() {
+		return FileUtil.convertToJSONString(this);
+	}
+	
 }

@@ -13,9 +13,6 @@ import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.MethodSource;
 import org.junit.jupiter.params.provider.ValueSource;
 
-import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
-
 import file.operations.actions.Action;
 import file.operations.actions.ActionFactory;
 import file.operations.actions.ActionItem;
@@ -71,11 +68,11 @@ public class TestFiles {
 
 	@Test
 	void testjson() {
-		String dir = "/Users/anupkalshetty/Desktop";
-		ActionItem ai = ActionFactory.getCreateFileActionItem("female_supremacy.txt", dir, "i am female supremacist for life");
-		Action a = ActionFactory.getAction("female_supremacy", ai);
-		ActionFactory.saveAction(a, dir);
+		String dir = "/Users/anupkalshetty/Desktop/eclipsewksp";
+		ActionItem ai = ActionFactory.getFindFilesOrFoldersActionItem("java", dir);
+		Action a = ActionFactory.getAction("tt", ai);
 		a.execute();
+		p(a);
 	}
 
 }
