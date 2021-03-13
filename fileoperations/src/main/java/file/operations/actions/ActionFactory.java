@@ -104,6 +104,11 @@ public class ActionFactory {
 				.operation(Items.create_file.getLabel()).build();
 	}
 
+	public static ActionItem getFindFilesOrFoldersActionItem(String name, String srcDir) {
+		return ActionItem.builder().fileOrFolderNames(name).srcDir(srcDir)
+				.operation(Items.find_files_or_folders.getLabel()).build();
+	}
+
 	public static void saveAction(Action a, String dir) {
 		FileUtil.saveObjectAsJSON(a, a.getName() + ".json", dir);
 	}
