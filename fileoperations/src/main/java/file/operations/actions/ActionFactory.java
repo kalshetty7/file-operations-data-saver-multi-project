@@ -23,16 +23,25 @@ public class ActionFactory {
 		FileUtil.saveObjectAsJSON(a, a.getName(), dir);
 	}
 
-	public static void executeAllActions(String dir) {
-		getAllActions(dir).forEach(a -> a.execute());
+	public static String executeAllActions(String dir) {
+		List<Action> actions = getAllActions(dir);
+		actions.forEach(a -> a.execute());
+		return actions.toString();
 	}
 
-	public static void executeActions(String dir, String... actionNames) {
-		getAllActions(dir).forEach(a -> {
+	public static String executeActions(String dir, String... actionNames) {
+		List<Action> actions = getAllActions(dir);
+		actions.forEach(a -> {
 			for (String name : actionNames)
 				if (a.getName().toLowerCase().contains(name.toLowerCase()))
 					a.execute();
 		});
+		return actions.toString();
+	}
+
+	public static String executeAction(Action a) {
+		a.execute();
+		return a.toString();
 	}
 
 	public static Action getAction(String actionName) {

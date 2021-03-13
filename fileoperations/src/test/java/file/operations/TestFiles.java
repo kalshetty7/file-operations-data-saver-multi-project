@@ -69,7 +69,7 @@ public class TestFiles {
 	@Test
 	void testjson() {
 		String dir = "/Users/anupkalshetty/Desktop/eclipsewksp";
-		ActionItem ai = ActionFactory.getFindFilesOrFoldersActionItem("java", dir);
+		ActionItem ai = ActionFactory.getFindFilesOrFoldersActionItem("", dir);
 		Action a = ActionFactory.getAction("tt", ai);
 		a.execute();
 		p(a);
