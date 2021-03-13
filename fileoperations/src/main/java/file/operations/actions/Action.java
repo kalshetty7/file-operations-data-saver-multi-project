@@ -3,6 +3,7 @@ package file.operations.actions;
 import java.util.List;
 import java.util.Set;
 
+import file.operations.Checksum;
 import file.operations.actions.ActionItem.Items;
 import lombok.Builder;
 import lombok.Data;
@@ -13,6 +14,7 @@ public class Action {
 	private String name;
 	private List<ActionItem> actionItems;
 	private final Set<String> availableOperations = Items.valueEnumMap().keySet();
+	private final List<String> checksumTypes = Checksum.CHECKSUM_TYPES;
 
 	public void execute() {
 		actionItems.forEach(c -> c.execute());

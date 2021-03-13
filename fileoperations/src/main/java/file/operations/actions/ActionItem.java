@@ -13,12 +13,19 @@ import lombok.Data;
 @Data
 @Builder
 public class ActionItem {
-	private String srcDir, targetDir, fileOrFolderNames, fileOrFolderPaths, fileContents, extensions, operation;
+	private String srcDir, targetDir, fileOrFolderNames, fileOrFolderPaths, fileContents, extensions, checksumType,
+			checksumFilePath, operation;
+
+	private List<File> foundFilesOrFolders;
+
+	@Builder.Default
+	boolean findOnlyFiles = true, findOnlyFolders = false;
 
 	public static enum Items {
 		copy, move, delete, backup_files_by_names, backup_files_by_extensions, restore, create_folder, create_file,
 		find_and_copy_files_by_names, find_and_copy_files_by_extensions, find_and_move_files_by_names,
-		find_and_move_files_by_extensions, find_and_delete_files_by_names, find_and_delete_files_by_extensions;
+		find_and_move_files_by_extensions, find_and_delete_files_by_names, find_and_delete_files_by_extensions,
+		find_files_or_folders, file_checksum;
 
 		public static Map<String, Items> valueEnumMap() {
 			int length = Items.values().length;
@@ -81,6 +88,10 @@ public class ActionItem {
 			break;
 		case find_and_delete_files_by_extensions:
 			FileUtil.findAndDeleteFilesByExtensions(srcDir, extensions);
+			break;
+		case find_files_or_folders:
+			foundFilesOrFolders = FileUtil.findFilesAndFolders(Filters.builder().onlyFiles(findOnlyFiles)
+					.onlyFolders(findOnlyFolders).nameString(fileOrFolderNames).build(), srcDir);
 			break;
 		default:
 			break;
