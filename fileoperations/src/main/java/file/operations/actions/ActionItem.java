@@ -91,15 +91,16 @@ public class ActionItem {
 			break;
 		case find_files_or_folders:
 			foundFilesOrFolders = FileUtil.findFilesAndFolders(Filters.builder().onlyFiles(findOnlyFiles)
-					.onlyFolders(findOnlyFolders).nameString(fileOrFolderNames).build(), srcDir);
+					.onlyFolders(findOnlyFolders).nameString(fileOrFolderNames).extensionString(extensions).build(),
+					srcDir);
 			break;
 		default:
 			break;
 		}
 	}
-	
+
 	public String toString() {
 		return FileUtil.convertToJSONString(this);
 	}
-	
+
 }

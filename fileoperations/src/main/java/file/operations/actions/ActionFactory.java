@@ -113,8 +113,8 @@ public class ActionFactory {
 				.operation(Items.create_file.getLabel()).build();
 	}
 
-	public static ActionItem getFindFilesOrFoldersActionItem(String name, String srcDir) {
-		return ActionItem.builder().fileOrFolderNames(name).srcDir(srcDir)
+	public static ActionItem getFindFilesOrFoldersActionItem(String names, String extensions, String srcDir) {
+		return ActionItem.builder().fileOrFolderNames(names).srcDir(srcDir).extensions(extensions)
 				.operation(Items.find_files_or_folders.getLabel()).build();
 	}
 
