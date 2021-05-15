@@ -3,6 +3,7 @@ package file.operations;
 import static org.apache.commons.collections4.CollectionUtils.isNotEmpty;
 
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
@@ -51,12 +52,12 @@ public class FileUtil {
 		}
 	}
 
-	private static Path pathNIO(String input) {
+	public static Path pathNIO(String input) {
 		Path p = Paths.get(input);
 		return p;
 	}
 
-	private static Path pathNIO(File input) {
+	public static Path pathNIO(File input) {
 		return pathNIO(input.getAbsolutePath());
 	}
 
@@ -277,25 +278,8 @@ public class FileUtil {
 
 	public static void move(File f, String targetDir) {
 		try {
-			createFoldersIfAbsent(targetDir);
-			String delim = delim(targetDir);
-			if (f.isDirectory()) {
-				List<File> allFiles = findAllFiles(f.getAbsolutePath());
-				allFiles.parallelStream().forEach(af -> {
-					String suffix = af.getAbsolutePath().replace(f.getParent(), "");
-					String targetFile = targetDir + suffix;
-					copy(af, new File(targetFile).getParent());
-				});
-				findFilesAndFolders(Filters.builder().onlyEmptyFolders(true).build(), f.getAbsolutePath())
-						.forEach(ef -> {
-							String suffix = ef.getAbsolutePath().replace(f.getParent(), "");
-							String targetFile = targetDir + suffix;
-							createFoldersIfAbsent(targetFile);
-						});
-			} else
-				Files.move(pathNIO(f), pathNIO(targetDir + delim + f.getName()), StandardCopyOption.REPLACE_EXISTING);
-			if (f.exists())
-				delete(f);
+			String target = targetDir + delim(targetDir) + f.getName();
+			Files.move(pathNIO(f), pathNIO(target), StandardCopyOption.REPLACE_EXISTING);
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
@@ -303,23 +287,22 @@ public class FileUtil {
 
 	public static void copy(File f, String targetDir) {
 		try {
-			createFoldersIfAbsent(targetDir);
-			String delim = delim(targetDir);
 			if (f.isDirectory()) {
-				List<File> allFiles = findAllFiles(f.getAbsolutePath());
-				allFiles.parallelStream().forEach(af -> {
-					String suffix = af.getAbsolutePath().replace(f.getParent(), "");
-					String targetFile = targetDir + suffix;
-					copy(af, new File(targetFile).getParent());
+				List<File> filesToBeCopied = findAllFiles(f.getAbsolutePath());
+				List<File> foldersToBeCopied = findFilesAndFolders(Filters.builder().onlyFolders(true).build(),
+						f.getAbsolutePath());
+				foldersToBeCopied.parallelStream().forEach(ftc -> {
+					String target = ftc.getAbsolutePath().replace(f.getAbsolutePath(), "");
+					target = targetDir + delim(targetDir) + f.getName() + target;
+					createFoldersIfAbsent(target);
 				});
-				findFilesAndFolders(Filters.builder().onlyEmptyFolders(true).build(), f.getAbsolutePath())
-						.forEach(ef -> {
-							String suffix = ef.getAbsolutePath().replace(f.getParent(), "");
-							String targetFile = targetDir + suffix;
-							createFoldersIfAbsent(targetFile);
-						});
+				filesToBeCopied.parallelStream().forEach(ftc -> {
+					String target = ftc.getAbsolutePath().replace(f.getAbsolutePath(), "");
+					target = targetDir + delim(targetDir) + f.getName() + target;
+					copy(ftc, target);
+				});
 			} else
-				Files.copy(pathNIO(f), pathNIO(targetDir + delim + f.getName()), StandardCopyOption.REPLACE_EXISTING);
+				Files.copy(pathNIO(f), pathNIO(targetDir), StandardCopyOption.REPLACE_EXISTING);
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
@@ -339,6 +322,10 @@ public class FileUtil {
 				}
 			});
 		}
+	}
+
+	public static void move(String srcFiles, String targetDir) {
+		move(toFileList(srcFiles), targetDir);
 	}
 
 	public static void move(List<File> files, String targetDir) {

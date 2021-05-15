@@ -26,7 +26,7 @@ public class Filters {
 			String[] tokens = items.split(",");
 			if (tokens != null && tokens.length > 0)
 				for (String token : tokens)
-					itemList.add(token.trim());
+					itemList.add(token);
 		}
 		return itemList;
 	}

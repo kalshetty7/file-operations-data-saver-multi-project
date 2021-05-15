@@ -6,7 +6,6 @@ import java.util.stream.Collectors;
 
 import file.operations.FileUtil;
 import file.operations.Filters;
-import file.operations.actions.ActionItem.Items;
 
 public class ActionFactory {
 	public static List<Action> getAllActions(String actionDir) {
@@ -44,37 +43,37 @@ public class ActionFactory {
 		return a.toString();
 	}
 
-	public static Action getAction(String actionName) {
+	public static Action createAction(String actionName) {
 		return Action.builder().name(actionName).build();
 	}
 
-	public static Action getAction(String actionName, ActionItem... items) {
+	public static Action createAction(String actionName, ActionItem... items) {
 		return Action.builder().name(actionName).actionItems(List.of(items)).build();
 	}
 
-	public static ActionItem getCopyActionItem(String src, String tar) {
+	public static ActionItem createCopyActionItem(String src, String tar) {
 		return ActionItem.builder().srcDir(src).targetDir(tar).operation(Items.copy.getLabel()).build();
 	}
 
-	public static ActionItem getMoveActionItem(String src, String tar) {
+	public static ActionItem createMoveActionItem(String src, String tar) {
 		return ActionItem.builder().srcDir(src).targetDir(tar).operation(Items.move.getLabel()).build();
 	}
 
-	public static ActionItem getDeleteActionItem(String src) {
+	public static ActionItem createDeleteActionItem(String src) {
 		return ActionItem.builder().srcDir(src).operation(Items.delete.getLabel()).build();
 	}
 
-	public static ActionItem getFindAndDeleteFilesByNamesActionItem(String src, String names) {
+	public static ActionItem createFindAndDeleteFilesByNamesActionItem(String src, String names) {
 		return ActionItem.builder().srcDir(src).fileOrFolderNames(names)
 				.operation(Items.find_and_delete_files_by_names.getLabel()).build();
 	}
 
-	public static ActionItem getFindAndDeleteFilesByExtensionsActionItem(String src, String extns) {
+	public static ActionItem createFindAndDeleteFilesByExtensionsActionItem(String src, String extns) {
 		return ActionItem.builder().srcDir(src).fileOrFolderNames(extns)
 				.operation(Items.find_and_delete_files_by_extensions.getLabel()).build();
 	}
 
-	public static ActionItem getBackupFilesByExtensionsActionItem(String src, String tar, String extns) {
+	public static ActionItem createBackupFilesByExtensionsActionItem(String src, String tar, String extns) {
 		return ActionItem.builder().srcDir(src).fileOrFolderNames(extns).targetDir(tar)
 				.operation(Items.backup_files_by_extensions.getLabel()).build();
 	}
@@ -84,37 +83,37 @@ public class ActionFactory {
 				.operation(Items.backup_files_by_names.getLabel()).build();
 	}
 
-	public static ActionItem getRestoreActionItem(String src) {
+	public static ActionItem createRestoreActionItem(String src) {
 		return ActionItem.builder().srcDir(src).operation(Items.restore.getLabel()).build();
 	}
 
-	public static ActionItem getFindAndCopyFilesByNamesActionItem(String src, String tar, String names) {
+	public static ActionItem createFindAndCopyFilesByNamesActionItem(String src, String tar, String names) {
 		return ActionItem.builder().srcDir(src).fileOrFolderNames(names).targetDir(tar)
 				.operation(Items.find_and_copy_files_by_names.getLabel()).build();
 	}
 
-	public static ActionItem getFindAndCopyFilesByExtensionsActionItem(String src, String tar, String extns) {
+	public static ActionItem createFindAndCopyFilesByExtensionsActionItem(String src, String tar, String extns) {
 		return ActionItem.builder().srcDir(src).fileOrFolderNames(extns).targetDir(tar)
 				.operation(Items.find_and_copy_files_by_extensions.getLabel()).build();
 	}
 
-	public static ActionItem getFindAndMoveFilesByNamesActionItem(String src, String tar, String names) {
+	public static ActionItem createFindAndMoveFilesByNamesActionItem(String src, String tar, String names) {
 		return ActionItem.builder().srcDir(src).fileOrFolderNames(names).targetDir(tar)
 				.operation(Items.find_and_move_files_by_names.getLabel()).build();
 	}
 
-	public static ActionItem getFindAndMoveFilesByExtensionsActionItem(String src, String tar, String extns) {
+	public static ActionItem createFindAndMoveFilesByExtensionsActionItem(String src, String tar, String extns) {
 		return ActionItem.builder().srcDir(src).fileOrFolderNames(extns).targetDir(tar)
 				.operation(Items.find_and_move_files_by_extensions.getLabel()).build();
 	}
 
-	public static ActionItem getCreateFileActionItem(String name, String tar, String content) {
+	public static ActionItem createCreateFileActionItem(String name, String tar, String content) {
 		return ActionItem.builder().fileOrFolderNames(name).fileContents(content).targetDir(tar)
 				.operation(Items.create_file.getLabel()).build();
 	}
 
-	public static ActionItem getFindFilesOrFoldersActionItem(String names, String extensions, String srcDir) {
-		return ActionItem.builder().fileOrFolderNames(names).srcDir(srcDir).extensions(extensions)
+	public static ActionItem createFindFilesOrFoldersActionItem(String names, String extensions, String src) {
+		return ActionItem.builder().fileOrFolderNames(names).srcDir(src).extensions(extensions)
 				.operation(Items.find_files_or_folders.getLabel()).build();
 	}
 
