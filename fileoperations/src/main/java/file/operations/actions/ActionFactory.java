@@ -117,6 +117,12 @@ public class ActionFactory {
 				.operation(Items.find_files_or_folders.getLabel()).build();
 	}
 
+	public static ActionItem createReplaceFileContentsActionItem(String names, String extensions, String replacers,
+			String src) {
+		return ActionItem.builder().fileOrFolderNames(names).srcDir(src).extensions(extensions).replacers(replacers)
+				.operation(Items.replace_file_contents.getLabel()).build();
+	}
+
 	public static void saveAction(Action a, String dir) {
 		FileUtil.saveObjectAsJSON(a, a.getName() + ".json", dir);
 	}

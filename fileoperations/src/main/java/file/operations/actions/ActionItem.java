@@ -12,7 +12,7 @@ import lombok.Data;
 @Builder
 public class ActionItem {
 	private String srcDir, targetDir, fileOrFolderNames, fileOrFolderPaths, fileContents, extensions, checksumType,
-			checksumFilePath, operation;
+			checksumFilePath, operation, replacers;
 
 	private List<File> foundFilesOrFolders;
 
@@ -69,6 +69,22 @@ public class ActionItem {
 			foundFilesOrFolders = FileUtil.findFilesAndFolders(Filters.builder().onlyFiles(findOnlyFiles)
 					.onlyFolders(findOnlyFolders).nameString(fileOrFolderNames).extensionString(extensions).build(),
 					srcDir);
+			break;
+		case replace_file_contents:
+			foundFilesOrFolders = FileUtil.findFilesAndFolders(Filters.builder().onlyFiles(findOnlyFiles)
+					.onlyFolders(findOnlyFolders).nameString(fileOrFolderNames).extensionString(extensions).build(),
+					srcDir);
+			String[] replacerArray = replacers.split(",");
+			foundFilesOrFolders.parallelStream().forEach(fff -> {
+				String contents = FileUtil.readFile(fff);
+				for (String r : replacerArray) {
+					String s1 = r.split("->")[0];
+					String s2 = r.split("->")[1];
+					if (contents.contains(s1))
+						contents = contents.replaceAll(s1, s2);
+				}
+				FileUtil.write(fff.getName(), fff.getParent(), contents);
+			});
 			break;
 		default:
 			break;

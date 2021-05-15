@@ -74,10 +74,12 @@ public class TestFiles {
 
 	@Test
 	void testjson() {
-		String dir = "/Users/anupkalshetty/eclipsewksp";
-		ActionItem ai = ActionFactory.createFindFilesOrFoldersActionItem("", "java", dir);
-		Action a = ActionFactory.createAction("tt", ai);
-		p(ActionFactory.executeAction(a));
+		String src = "/Users/anupkalshetty/Desktop/test/src";
+		String tar = "/Users/anupkalshetty/Desktop/test/tar";
+		ActionItem ai = ActionFactory.createReplaceFileContentsActionItem("", "properties", "xyz->anup,abc->macos", src);
+		Action a = ActionFactory.createAction("replace item", ai);
+		ActionFactory.saveAction(a, "/Users/anupkalshetty/Desktop");
+		a.execute();
 	}
 
 }
