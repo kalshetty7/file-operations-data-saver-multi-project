@@ -3,25 +3,16 @@ package file.operations;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.io.File;
-import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.StandardCopyOption;
-import java.util.LinkedHashMap;
 import java.util.List;
-import java.util.Map;
-import java.util.Set;
 import java.util.stream.Stream;
 
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.MethodSource;
 import org.junit.jupiter.params.provider.ValueSource;
 
-import file.operations.actions.Action;
 import file.operations.actions.ActionFactory;
-import file.operations.actions.ActionItem;
 
 public class TestFiles {
 
@@ -32,7 +23,7 @@ public class TestFiles {
 	String mainAreaFolder = null, testAreaFolder = null;
 	List<File> totalFiles = null;
 
-	//@BeforeEach
+	// @BeforeEach
 	void init() {
 		List<File> testAreaFolders = FileUtil
 				.findFilesAndFolders(Filters.builder().onlyFolders(true).nameString("test-area").build(), ".");
@@ -74,7 +65,7 @@ public class TestFiles {
 
 	@Test
 	void testjson() {
-		p(FileUtil.convertToJSONString("test"));
+		ActionFactory.executeAllActions("/Users/anupkalshetty/Desktop/actions");
 	}
 
 }

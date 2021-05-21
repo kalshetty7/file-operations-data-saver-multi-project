@@ -1,10 +1,10 @@
 package file.operations;
 
-import static org.apache.commons.collections4.CollectionUtils.isNotEmpty;
+import static org.apache.commons.io.FileUtils.copyToDirectory;
+import static org.apache.commons.io.FileUtils.deleteDirectory;
+import static org.apache.commons.io.FileUtils.writeStringToFile;
 
 import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileWriter;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
@@ -17,16 +17,13 @@ import java.util.Collection;
 import java.util.Iterator;
 import java.util.List;
 
-import org.apache.commons.collections4.CollectionUtils;
-
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
-
-import file.operations.actions.Action;
 
 public class FileUtil {
 
 	private static final String BACKUP_FILE_NAME = "Backups.bp";
+	private static final String BACKUP_RESTORE_SEPERATOR = "->";
 
 	static void p(Object o) {
 		System.out.print("\n" + o + "\n");
@@ -44,11 +41,10 @@ public class FileUtil {
 	public static void write(String fileName, String targetDir, String contents) {
 		String delim = delim(targetDir);
 		File f = new File(targetDir + delim + fileName);
-		createFoldersIfAbsent(targetDir);
-		try (FileWriter fw = new FileWriter(f)) {
-			fw.write(contents);
-		} catch (IOException e) {
-			e.printStackTrace();
+		try {
+			writeStringToFile(f, contents);
+		} catch (IOException e1) {
+			e1.printStackTrace();
 		}
 	}
 
@@ -126,105 +122,21 @@ public class FileUtil {
 		return Arrays.asList(items);
 	}
 
-	public static List<File> delete(String items) {
-		return delete(toFileList(items));
+	public static void delete(String items) {
+		delete(toFileList(items));
 	}
 
-	public static List<File> delete(List<File> files) {
-		List<File> filesToBeDeleted = new ArrayList<>();
-		files.forEach(f -> {
-			File deletedFile = delete(f);
-			if (deletedFile != null)
-				filesToBeDeleted.add(deletedFile);
-		});
-		return filesToBeDeleted;
+	public static void delete(List<File> files) {
+		files.parallelStream().forEach(FileUtil::delete);
 	}
 
-	public static File delete(File f) {
-		if (f.exists()) {
-			if (f.isFile()) {
+	public static void delete(File f) {
+		try {
+			if (f.isDirectory())
+				deleteDirectory(f);
+			else
 				f.delete();
-				return f;
-			} else if (isEmptyFolder(f)) {
-				f.delete();
-				return f;
-			} else {
-				List<File> allFiles = findFilesAndFolders(Filters.builder().onlyFiles(true).build(),
-						f.getAbsolutePath());
-				if (CollectionUtils.isNotEmpty(allFiles))
-					allFiles.forEach(File::delete);
-				List<File> emptyFolders = findFilesAndFolders(Filters.builder().onlyEmptyFolders(true).build(),
-						f.getAbsolutePath());
-				if (CollectionUtils.isNotEmpty(emptyFolders))
-					emptyFolders.forEach(File::delete);
-				while (!isEmptyFolder(f) && f.exists())
-					return delete(f);
-				return delete(f);
-			}
-		} else
-			return null;
-	}
-
-	public static void backupFilesByName(String srcDir, String targetDir, String fileNames) {
-		Filters ftrs = Filters.builder().onlyFiles(true).nameString(fileNames).build();
-		List<File> foundFiles = findFilesAndFolders(ftrs, srcDir);
-		String delim = delim(targetDir);
-		File bkp = new File(targetDir + delim + BACKUP_FILE_NAME);
-		createFoldersIfAbsent(targetDir);
-		try (FileWriter fw = new FileWriter(bkp)) {
-			foundFiles.parallelStream().forEach(f -> {
-				String suffix = f.getAbsolutePath().replace(new File(srcDir).getParent(), "");
-				String targetFile = targetDir + suffix;
-				copy(f, new File(targetFile).getParent());
-				try {
-					fw.write(f.getAbsolutePath() + "  ->  " + targetFile + "\n");
-				} catch (IOException e) {
-					e.printStackTrace();
-				}
-			});
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
-	}
-
-	public static void backupFiles(String srcDir, String targetDir, List<File> files) {
-		String delim = delim(targetDir);
-		File bkp = new File(targetDir + delim + BACKUP_FILE_NAME);
-		createFoldersIfAbsent(targetDir);
-		try (FileWriter fw = new FileWriter(bkp)) {
-			files.parallelStream().forEach(f -> {
-				String suffix = f.getAbsolutePath().replace(new File(srcDir).getParent(), "");
-				String targetFile = targetDir + suffix;
-				copy(f, new File(targetFile).getParent());
-				try {
-					fw.write(f.getAbsolutePath() + "  ->  " + targetFile + "\n");
-				} catch (IOException e) {
-					e.printStackTrace();
-				}
-			});
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
-	}
-
-	public static void backupFilesByExtension(String srcDir, String targetDir, String extensions) {
-		Filters ftrs = Filters.builder().onlyFiles(true).extensionString(extensions).build();
-		List<File> foundFiles = findFilesAndFolders(ftrs, srcDir);
-		String delim = delim(targetDir);
-		File bkp = new File(targetDir + delim + BACKUP_FILE_NAME);
-		createFoldersIfAbsent(targetDir);
-		try (FileWriter fw = new FileWriter(bkp)) {
-			foundFiles.parallelStream().forEach(f -> {
-				String suffix = f.getAbsolutePath().replace(new File(srcDir).getParent(), "");
-				String targetFile = targetDir + suffix;
-				copy(f, new File(targetFile).getParent());
-				try {
-					fw.write(f.getAbsolutePath() + "  ->  " + targetFile + "\n");
-				} catch (IOException e) {
-					e.printStackTrace();
-				}
-			});
-		} catch (Exception e) {
+		} catch (IOException e) {
 			e.printStackTrace();
 		}
 	}
@@ -251,34 +163,30 @@ public class FileUtil {
 	}
 
 	public static List<File> findAndDeleteFilesByExtensions(String extensions, String dir) {
-		return delete(findFilesAndFolders(Filters.builder().onlyFiles(true).extensionString(extensions).build(), dir));
-	}
-
-	public static void createFoldersIfAbsent(String dir) {
-		createFoldersIfAbsent(new File(dir));
-	}
-
-	public static void createFoldersIfAbsent(File f) {
-		if (!f.exists()) {
-			f.mkdirs();
-		}
+		List<File> files = findFilesAndFolders(Filters.builder().onlyFiles(true).extensionString(extensions).build(),
+				dir);
+		delete(files);
+		return files;
 	}
 
 	public static List<File> findAndDeleteFolders(String folderNames, String dir) {
 		Filters ftrs = Filters.builder().onlyFolders(true).nameString(folderNames).build();
 		List<File> foldersToBeDeleted = findFilesAndFolders(ftrs, dir);
-		return delete(foldersToBeDeleted);
+		delete(foldersToBeDeleted);
+		return foldersToBeDeleted;
 	}
 
 	public static List<File> findAndDeleteFilesByName(String dir, String fileNames) {
 		Filters ftrs = Filters.builder().onlyFiles(true).nameString(fileNames).build();
 		List<File> filesToBeDeleted = findFilesAndFolders(ftrs, dir);
-		return delete(filesToBeDeleted);
+		delete(filesToBeDeleted);
+		return filesToBeDeleted;
 	}
 
 	public static void move(File f, String targetDir) {
 		try {
 			String target = targetDir + delim(targetDir) + f.getName();
+			new File(target).mkdirs();
 			Files.move(pathNIO(f), pathNIO(target), StandardCopyOption.REPLACE_EXISTING);
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -287,40 +195,10 @@ public class FileUtil {
 
 	public static void copy(File f, String targetDir) {
 		try {
-			if (f.isDirectory()) {
-				List<File> filesToBeCopied = findAllFiles(f.getAbsolutePath());
-				List<File> foldersToBeCopied = findFilesAndFolders(Filters.builder().onlyFolders(true).build(),
-						f.getAbsolutePath());
-				foldersToBeCopied.parallelStream().forEach(ftc -> {
-					String target = ftc.getAbsolutePath().replace(f.getAbsolutePath(), "");
-					target = targetDir + delim(targetDir) + f.getName() + target;
-					createFoldersIfAbsent(target);
-				});
-				filesToBeCopied.parallelStream().forEach(ftc -> {
-					String target = ftc.getAbsolutePath().replace(f.getAbsolutePath(), "");
-					target = targetDir + delim(targetDir) + f.getName() + target;
-					copy(ftc, target);
-				});
-			} else
-				Files.copy(pathNIO(f), pathNIO(targetDir), StandardCopyOption.REPLACE_EXISTING);
+			File targetFile = new File(targetDir);
+			copyToDirectory(f, targetFile);
 		} catch (Exception e) {
 			e.printStackTrace();
-		}
-	}
-
-	public static void restoreFiles(String dir) {
-		Filters ftrs = Filters.builder().onlyFiles(true).isExactMatch(true).nameString(BACKUP_FILE_NAME).build();
-		File f = findFilesAndFolders(ftrs, dir).get(0);
-		List<String> lines = readFileByLines(f);
-		if (isNotEmpty(lines)) {
-			lines.parallelStream().forEach(l -> {
-				if (l.contains("->")) {
-					String tokens[] = l.split("->");
-					String from = tokens[1].trim();
-					String to = tokens[0].trim();
-					copy(from, new File(to).getParent());
-				}
-			});
 		}
 	}
 
@@ -347,36 +225,80 @@ public class FileUtil {
 			return "\\";
 	}
 
+	private static String delim(File f) {
+		return delim(f.getAbsolutePath());
+	}
+
 	public static void findAndCopyFilesByExtension(String srcDir, String targetDir, String extensions) {
-		Filters ftrs = Filters.builder().onlyFiles(true).extensionString(extensions).build();
-		List<File> foundFiles = findFilesAndFolders(ftrs, srcDir);
-		String delim = delim(targetDir);
-		createFoldersIfAbsent(targetDir);
-		copy(foundFiles, targetDir);
+		copy(findFilesByExtension(extensions, srcDir), targetDir);
 	}
 
 	public static void findAndCopyFilesByName(String srcDir, String targetDir, String names) {
-		Filters ftrs = Filters.builder().onlyFiles(true).nameString(names).build();
-		List<File> foundFiles = findFilesAndFolders(ftrs, srcDir);
-		String delim = delim(targetDir);
-		createFoldersIfAbsent(targetDir);
-		copy(foundFiles, targetDir);
+		copy(findFilesByName(names, srcDir), targetDir);
 	}
 
 	public static void findAndMoveFilesByExtension(String srcDir, String targetDir, String extensions) {
-		Filters ftrs = Filters.builder().onlyFiles(true).extensionString(extensions).build();
-		List<File> foundFiles = findFilesAndFolders(ftrs, srcDir);
-		String delim = delim(targetDir);
-		createFoldersIfAbsent(targetDir);
-		move(foundFiles, targetDir);
+		move(findFilesByExtension(extensions, srcDir), targetDir);
 	}
 
 	public static void findAndMoveFilesByName(String srcDir, String targetDir, String names) {
-		Filters ftrs = Filters.builder().onlyFiles(true).nameString(names).build();
-		List<File> foundFiles = findFilesAndFolders(ftrs, srcDir);
-		String delim = delim(targetDir);
-		createFoldersIfAbsent(targetDir);
-		move(foundFiles, targetDir);
+		move(findFilesByName(names, srcDir), targetDir);
+	}
+
+	private static List<File> findFilesByName(String names, String dir) {
+		return findFilesAndFolders(Filters.builder().onlyFiles(true).nameString(names).build(), dir);
+	}
+
+	private static List<File> findFoldersByName(String names, String dir) {
+		return findFilesAndFolders(Filters.builder().onlyFolders(true).nameString(names).build(), dir);
+	}
+
+	private static List<File> findFilesByExtension(String extensions, String dir) {
+		return findFilesAndFolders(Filters.builder().onlyFiles(true).extensionString(extensions).build(), dir);
+	}
+
+	// backup
+	public static void backup(String src, String target) {
+		backup(toFileList(src), target);
+	}
+
+	public static void backup(List<File> files, String target) {
+		StringBuilder sb = new StringBuilder();
+		files.parallelStream().forEach(f -> {
+			String targetDir = target + f.getParent();
+			sb.append("\n" + f + BACKUP_RESTORE_SEPERATOR + targetDir + "\n");
+			copy(f, targetDir);
+		});
+		write(BACKUP_FILE_NAME, target, sb.toString());
+	}
+
+	public static void findAndBackupFilesByName(String srcDir, String targetDir, String fileNames) {
+		backup(findFilesByName(fileNames, srcDir), targetDir);
+	}
+
+	public static void findAndBackupFilesByExtension(String srcDir, String targetDir, String extensions) {
+		backup(findFilesByExtension(extensions, srcDir), targetDir);
+	}
+
+	public static void findAndBackupFoldersByName(String srcDir, String targetDir, String folderNames) {
+		backup(findFoldersByName(folderNames, srcDir), targetDir);
+	}
+
+	// end backup
+
+	public static void restore(String srcDir) {
+		String delim = delim(srcDir);
+		File f = new File(srcDir + delim + BACKUP_FILE_NAME);
+		List<String> lines = readFileByLines(f);
+		for (String l : lines) {
+			if (l.contains(BACKUP_RESTORE_SEPERATOR)) {
+				String src = l.split(BACKUP_RESTORE_SEPERATOR)[1];
+				String target = l.split(BACKUP_RESTORE_SEPERATOR)[0];
+				File targetFile = new File(target);
+				File srcFile = new File(src + delim + targetFile.getName());
+				copy(srcFile, targetFile.getParent());
+			}
+		}
 	}
 
 	public static <T> void saveObjectAsJSON(T t, String fileName, String targetDir) {

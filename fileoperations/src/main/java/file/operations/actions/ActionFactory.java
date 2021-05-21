@@ -83,10 +83,6 @@ public class ActionFactory {
 				.operation(Items.backup_files_by_names.getLabel()).build();
 	}
 
-	public static ActionItem createRestoreActionItem(String src) {
-		return ActionItem.builder().srcDir(src).operation(Items.restore.getLabel()).build();
-	}
-
 	public static ActionItem createFindAndCopyFilesByNamesActionItem(String src, String tar, String names) {
 		return ActionItem.builder().srcDir(src).fileOrFolderNames(names).targetDir(tar)
 				.operation(Items.find_and_copy_files_by_names.getLabel()).build();
@@ -121,6 +117,24 @@ public class ActionFactory {
 			String src) {
 		return ActionItem.builder().fileOrFolderNames(names).srcDir(src).extensions(extensions).replacers(replacers)
 				.operation(Items.replace_file_contents.getLabel()).build();
+	}
+
+	// backup
+	public static ActionItem createFindAndBackupFilesByNamesActionItem(String src, String tar, String names) {
+		return ActionItem.builder().srcDir(src).fileOrFolderNames(names).targetDir(tar)
+				.operation(Items.find_and_backup_files_by_names.getLabel()).build();
+	}
+
+	public static ActionItem createFindAndBackupFilesByExtensionsActionItem(String src, String tar, String extns) {
+		return ActionItem.builder().srcDir(src).fileOrFolderNames(extns).targetDir(tar)
+				.operation(Items.find_and_backup_files_by_extensions.getLabel()).build();
+	}
+	// end backup
+	
+	
+	//restore
+	public static ActionItem createRestoreFromBackupActionItem(String src) {
+		return ActionItem.builder().srcDir(src).operation(Items.restore_from_backup.getLabel()).build();
 	}
 
 	public static void saveAction(Action a, String dir) {

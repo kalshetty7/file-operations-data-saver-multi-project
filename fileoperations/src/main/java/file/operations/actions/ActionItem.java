@@ -26,20 +26,17 @@ public class ActionItem {
 			FileUtil.copy(new File(srcDir), targetDir);
 			break;
 		case backup_files_by_names:
-			FileUtil.backupFilesByName(srcDir, targetDir, fileOrFolderNames);
+			FileUtil.findAndBackupFilesByName(srcDir, targetDir, fileOrFolderNames);
 			break;
 		case backup_files_by_extensions:
-			FileUtil.backupFilesByExtension(srcDir, targetDir, extensions);
-			break;
-		case restore:
-			FileUtil.restoreFiles(srcDir);
+			FileUtil.findAndBackupFilesByExtension(srcDir, targetDir, extensions);
 			break;
 		case create_file:
 			FileUtil.write(fileOrFolderNames, targetDir, fileContents);
 			break;
 		case create_folder:
 			File f = new File(srcDir);
-			FileUtil.createFoldersIfAbsent(f);
+			f.mkdirs();
 			break;
 		case move:
 			FileUtil.move(new File(srcDir), targetDir);
@@ -85,6 +82,15 @@ public class ActionItem {
 				}
 				FileUtil.write(fff.getName(), fff.getParent(), contents);
 			});
+			break;
+		case find_and_backup_files_by_names:
+			FileUtil.findAndBackupFilesByName(srcDir, targetDir, fileOrFolderNames);
+			break;
+		case find_and_backup_files_by_extensions:
+			FileUtil.findAndBackupFilesByExtension(srcDir, targetDir, fileOrFolderNames);
+			break;
+		case restore_from_backup:
+			FileUtil.restore(srcDir);
 			break;
 		default:
 			break;

@@ -4,10 +4,11 @@ import java.util.LinkedHashMap;
 import java.util.Map;
 
 public enum Items {
-	copy, move, delete, backup_files_by_names, backup_files_by_extensions, restore, create_folder, create_file,
+	copy, move, delete, backup_files_by_names, backup_files_by_extensions, create_folder, create_file,
 	find_and_copy_files_by_names, find_and_copy_files_by_extensions, find_and_move_files_by_names,
 	find_and_move_files_by_extensions, find_and_delete_files_by_names, find_and_delete_files_by_extensions,
-	find_files_or_folders, replace_file_contents, file_checksum;
+	find_and_backup_files_by_names, find_and_backup_files_by_extensions, restore_from_backup, find_files_or_folders,
+	replace_file_contents, file_checksum;
 
 	public static Map<String, Items> valueEnumMap() {
 		int length = Items.values().length;
