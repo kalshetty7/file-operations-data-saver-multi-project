@@ -1,0 +1,49 @@
+{
+  "name": "sample_backup",
+  "actionItems": [
+    {
+      "srcDir": "/Users/anupkalshetty/Desktop/wksp",
+      "targetDir": "/Users/anupkalshetty/Desktop/javafiles",
+      "fileOrFolderNames": "java",
+      "operation": "backup files by extensions",
+      "findOnlyFiles": false,
+      "findOnlyFolders": false
+    }
+  ],
+  "availableOperations": [
+    "copy",
+    "move",
+    "delete",
+    "backup files by names",
+    "backup files by extensions",
+    "create folder",
+    "create file",
+    "find and copy files by names",
+    "find and copy files by extensions",
+    "find and move files by names",
+    "find and move files by extensions",
+    "find and delete files by names",
+    "find and delete files by extensions",
+    "find and backup files by names",
+    "find and backup files by extensions",
+    "restore from backup",
+    "find files or folders",
+    "replace file contents",
+    "file checksum"
+  ],
+  "checksumTypes": [
+    "MD2",
+    "MD5",
+    "SHA-1",
+    "SHA-224",
+    "SHA-256",
+    "SHA-384",
+    "SHA-512",
+    "SHA-512/224",
+    "SHA-512/256",
+    "SHA3-224",
+    "SHA3-256",
+    "SHA3-384",
+    "SHA3-512"
+  ]
+}

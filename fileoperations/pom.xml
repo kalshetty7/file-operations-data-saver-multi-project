@@ -6,11 +6,49 @@
 	<groupId>file.operations</groupId>
 	<artifactId>fileoperations</artifactId>
 	<packaging>jar</packaging>
-	
+
 	<parent>
 		<groupId>com.file.manager</groupId>
 		<artifactId>file-operations-data-saver-multi-project</artifactId>
 		<version>1.0-SNAPSHOT</version>
 	</parent>
-	
+
+
+	<build>
+		<plugins>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-jar-plugin</artifactId>
+				<configuration>
+					<archive>
+						<manifest>
+							<mainClass>file.operations.ActionExecutor</mainClass>
+						</manifest>
+					</archive>
+				</configuration>
+			</plugin>
+			<plugin>
+				<artifactId>maven-assembly-plugin</artifactId>
+				<executions>
+					<execution>
+						<phase>package</phase>
+						<goals>
+							<goal>single</goal>
+						</goals>
+					</execution>
+				</executions>
+				<configuration>
+				<archive>
+						<manifest>
+							<mainClass>file.operations.ActionExecutor</mainClass>
+						</manifest>
+					</archive>
+					<descriptorRefs>
+						<descriptorRef>jar-with-dependencies</descriptorRef>
+					</descriptorRefs>
+				</configuration>
+			</plugin>
+		</plugins>
+	</build>
+
 </project>

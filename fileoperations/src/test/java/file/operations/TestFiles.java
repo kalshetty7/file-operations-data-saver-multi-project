@@ -14,6 +14,7 @@ import org.junit.jupiter.params.provider.ValueSource;
 
 import file.operations.actions.ActionFactory;
 
+@Disabled
 public class TestFiles {
 
 	static void p(Object o) {

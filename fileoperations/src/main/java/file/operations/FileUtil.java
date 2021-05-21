@@ -245,15 +245,15 @@ public class FileUtil {
 		move(findFilesByName(names, srcDir), targetDir);
 	}
 
-	private static List<File> findFilesByName(String names, String dir) {
+	public static List<File> findFilesByName(String names, String dir) {
 		return findFilesAndFolders(Filters.builder().onlyFiles(true).nameString(names).build(), dir);
 	}
 
-	private static List<File> findFoldersByName(String names, String dir) {
+	public static List<File> findFoldersByName(String names, String dir) {
 		return findFilesAndFolders(Filters.builder().onlyFolders(true).nameString(names).build(), dir);
 	}
 
-	private static List<File> findFilesByExtension(String extensions, String dir) {
+	public static List<File> findFilesByExtension(String extensions, String dir) {
 		return findFilesAndFolders(Filters.builder().onlyFiles(true).extensionString(extensions).build(), dir);
 	}
 
