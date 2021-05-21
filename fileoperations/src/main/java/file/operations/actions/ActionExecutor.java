@@ -1,12 +1,11 @@
-package file.operations;
+package file.operations.actions;
 
 import java.io.File;
 import java.util.List;
 
 import org.apache.commons.collections4.CollectionUtils;
 
-import file.operations.actions.Action;
-import file.operations.actions.ActionFactory;
+import file.operations.FileUtil;
 
 public class ActionExecutor {
 	static void p(Object o) {
